@@ -35,7 +35,6 @@ export class PagesComponent implements OnInit {
       let token1 = htmltext.substr(x, 200)
       let y = token1.indexOf("\"")
       let access_token = token1.substr(0, y)
-      console.log('token goc: ' + access_token)
       if (access_token) {
         this._pagesService.getAllPage(access_token, (data) => {
           this._db.list('postmypage/users/' + localToken).set('pages', data)
@@ -48,7 +47,6 @@ export class PagesComponent implements OnInit {
         //   window.location.href = '/'
         // })
       } else {
-        console.log('Ko có accesstoken')
         alert('Code không hợp lệ, hãy nhớ đăng nhập facebook và làm lại theo hướng dẫn')
       }
     } else {

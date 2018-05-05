@@ -29,6 +29,7 @@ export class HomeComponent implements OnInit {
   isVideo = false;
   attached_media;
   percentUploadImage: number;
+  arrImageOnStorage = []
   constructor(
     private _db: AngularFireDatabase,
     public _storage: AngularFireStorage,
@@ -49,20 +50,25 @@ export class HomeComponent implements OnInit {
     // })
   }
   upload(image) {
-    return new Promise((resolve, reject) => {
-      let taskUpload = this._storage.upload('postmypage/' + 'huy' + '/' + new Date().getTime(), image).downloadURL().subscribe(urlImage => {
-        resolve(urlImage)
+    let random = Math.floor(Math.random() * 100000)
+    let taskUpload = this._storage.upload('postmypage/' + new Date().getTime() + random, image).then(res => {
+      let fullPath = (res.metadata.fullPath)
+      this._db.list('postmypage/imageuploaded').push(fullPath).then(xxxxx => {
+        this.arrImageOnStorage.push({
+          key: xxxxx.key,
+          path: fullPath
+        })
       })
+      this.arrImages.push(res.downloadURL)
     })
   }
-  async  uploadImages(images) {
+  uploadImages(images) {
     for (let image of images) {
-      let img_url = await this.upload(image)
-      this.arrImages.push(img_url)
+      let img_url = this.upload(image)
     }
   }
   onFileSelected(event) {
-    let reader = new FileReader();
+
     this.attached_media = [];
     let images = event.target.files
     if (images.length) {
@@ -80,30 +86,6 @@ export class HomeComponent implements OnInit {
     }
 
     this.uploadImages(images)
-    // for (var i = 0; i < images.length; i++) {
-    //   this.showProgress = true;
-    //   let image = {
-    //     url: '',
-    //     percent: '',
-    //   }
-    //   this.upload(images[i], (img) => {
-    //     this.arrImages.push(img)
-    //     if(this.arrImages.length == images.length){
-    //       this.showProgress = false
-    //     }
-    //   })
-    //   // let taskUpload = this._storage.upload('postmypage/' + localToken + '/' + new Date().getTime(), images[i])
-    //   // taskUpload.percentageChanges().subscribe(percent => {
-    //   //   this.percentUploadImage = Math.round(percent)
-    //   // })
-
-    //   // taskUpload.downloadURL().subscribe(urlImage => {
-    //   //   this.arrImages.push(urlImage)
-    //   //   if (this.arrImages.length == images.length) {
-    //   //     this.showProgress = false
-    //   //   }
-    //   // })
-    // }
   }
 
   alert(body) {
@@ -123,7 +105,12 @@ export class HomeComponent implements OnInit {
     this.arrImages = []
     this.arrDayTime = []
     this.isVideo = false;
-
+    // Loc cac anh trong database uploaded 
+    for (let item_delete of this.arrImageOnStorage) {
+      this._db.list('postmypage/imageuploaded').remove(item_delete.key)
+      this._storage.ref(item_delete.path).delete()
+    }
+    this.arrImageOnStorage = []
   }
   onFormSubmit(form) {
     // Start datetime
@@ -133,12 +120,11 @@ export class HomeComponent implements OnInit {
       let timeAll = this._postcontentservice.getTime(form.value['pickerAll'])
       this.scheduled_publish_time = timeAll
     } else {
-      console.log('Not All')
       Object.keys(formvalue).map(key => {
         let dash = 'datetimepicker-'
         let positionDash = key.indexOf('datetimepicker')
         if (positionDash != -1 && formvalue[key] != '|') {
-          // console.log(form.value[key])
+          
           var acc = key.slice(positionDash + dash.length)
           var huy = this._postcontentservice.getTime(form.value[key])
           this.arrDayTime[acc] = (huy)
@@ -170,7 +156,6 @@ export class HomeComponent implements OnInit {
                 this._postcontentservice.postVideo(this.arrDayTime[access_token], contentVideo, access_token, (err, res) => {
                   this._dashboardservice.getInfoPage(access_token, (err, info) => {
                     if (info) {
-                      console.log(res)
                       this.arrPosted.push({ post_id: res.id, page_id: info.id, page_name: info.name })
                       this.loadingService.complete()
                       this.resetForm(form)
@@ -182,7 +167,6 @@ export class HomeComponent implements OnInit {
                 this.scheduled_publish_time ? publish_time = this.scheduled_publish_time : publish_time = this.arrDayTime[access_token]
                 this._postcontentservice.postImages(publish_time, content, this.arrImages, access_token, (err, res) => {
                   this._dashboardservice.getInfoPage(access_token, (err, info) => {
-                    console.log(info)
                     if (info) {
                       this.arrPosted.push({ post_id: res.id, page_id: info.id, page_name: info.name })
                       this.loadingService.complete()
@@ -208,7 +192,6 @@ export class HomeComponent implements OnInit {
                 } else {
                   this._dashboardservice.getInfoPage(access_token, (err, info) => {
                     if (info) {
-                      console.log(res)
                       this.arrPosted.push({ post_id: res.id, page_id: info.id, page_name: info.name })
                       this.loadingService.complete()
                       this.resetForm(form)

@@ -16,7 +16,6 @@ export class RepcmtComponent implements OnInit {
   
   reply() {
     let commentInfoJson = JSON.parse(JSON.stringify(this.commentInfo))
-    console.log(this.commentInfo)
     let idComment = commentInfoJson.cmt.id;
     let access_token = commentInfoJson.access_token;
     // let replyContent = '@[' + commentInfoJson.cmt.from.id + ':0] ' + this.replyContent;

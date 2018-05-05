@@ -5,10 +5,24 @@ import { Observable } from 'rxjs/Observable';
 import { async } from '@firebase/util';
 import { forEachAsync } from 'forEachAsync';
 import { forkJoin } from 'rxjs/observable/forkJoin';
+import { Ng2ImgurUploader } from 'ng2-imgur-uploader';
+
 const localToken = localStorage.getItem('token')
 @Injectable()
 export class PostcontentService {
-  constructor(private _http: Http, private _db: AngularFireDatabase) { }
+  constructor(private _http: Http, private _db: AngularFireDatabase, private ng2imgur: Ng2ImgurUploader) { }
+  image2imgur(image) {
+    type ImgurUploadOptions = {
+      clientId: string,
+      imageData: Blob,
+      title?: string
+    }
+    let uploadOptions: ImgurUploadOptions = {
+      clientId: '238ff8a99cfcf80',
+      imageData: image
+    }
+    return this.ng2imgur.upload(uploadOptions)
+  }
   uploadOneImage(url_image, access_token) {
     let option = {
       access_token: access_token,
@@ -17,7 +31,7 @@ export class PostcontentService {
     }
     return this._http.post('https://graph.facebook.com/v2.11/me/photos', option);
   }
-  
+
   uploadImages(arrImages, access_token, callback) {
     let arrRes = []
     arrImages.forEach(async image => {
@@ -72,7 +86,6 @@ export class PostcontentService {
         scheduled_publish_time: scheduled_publish_time,
         published: !scheduled_publish_time
       }
-      console.log(option)
       let query = 'https://graph.facebook.com/v2.11/me/feed'
       this._http.post(query, option).map(res => res.json()).subscribe(res => {
         callback(undefined, res)

@@ -14,7 +14,8 @@ export class LoginService {
 
   authenticate(token, password, callback) {
     this._db.list('postmypage').valueChanges().subscribe(res => {
-      let usersJson = JSON.parse(JSON.stringify(res[0]))
+      // Coi chung sai cho nay
+      let usersJson = JSON.parse(JSON.stringify(res[1]))
       let positionTokenInArray = Object.keys(usersJson).indexOf(token)
       if (positionTokenInArray == -1) {
         callback('Nhập sai key', false)

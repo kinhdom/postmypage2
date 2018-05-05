@@ -59,7 +59,6 @@ export class NewcommentService {
       message: replyContent,
       attachment_url:''
     }
-    console.log(option)
     let query = 'https://graph.facebook.com/v2.11/' + idComment + '/comments'
     this._http.post(query, option).subscribe(res => {
       console.log(res.json().id)

@@ -40,6 +40,8 @@ import {NgxPaginationModule} from 'ngx-pagination';
 import { RepcmtComponent } from './newcomment/repcmt/repcmt.component';
 import { SubcmtComponent } from './newcomment/repcmt/subcmt/subcmt.component';
 import { LoadingimgComponent } from './home/loadingimg/loadingimg.component';
+// Image2Imgur
+import {Ng2ImgurUploaderModule} from 'ng2-imgur-uploader';
 
 @NgModule({
   declarations: [
@@ -68,7 +70,8 @@ import { LoadingimgComponent } from './home/loadingimg/loadingimg.component';
     AngularFireDatabaseModule,
     AngularFireStorageModule,
     BrowserAnimationsModule,
-    NgxPaginationModule
+    NgxPaginationModule,
+    Ng2ImgurUploaderModule
   ],
   providers: [
     PagesService,
