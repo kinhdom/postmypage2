@@ -42,12 +42,6 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.arrPages = this._db.list('postmypage/users/' + localToken + '/pages').valueChanges()
-    // this.arrPages.subscribe(page => {
-    //   page.forEach(element => {
-    //     let access_token = element.access_token
-    //     // this.arrDayTime[access_token] = undefined
-    //   });
-    // })
   }
   upload(image) {
     let random = Math.floor(Math.random() * 100000)
@@ -68,7 +62,6 @@ export class HomeComponent implements OnInit {
     }
   }
   onFileSelected(event) {
-
     this.attached_media = [];
     let images = event.target.files
     if (images.length) {
@@ -84,7 +77,6 @@ export class HomeComponent implements OnInit {
     } else {
       console.log('Không có file được chọn')
     }
-
     this.uploadImages(images)
   }
 
