@@ -28,29 +28,24 @@ export class PagesComponent implements OnInit {
   }
   onFormSubmit(form) {
     let html = form.value.code
-    if (html) {
-      let htmltext = this._pagesService.html2text(html)
-      // Tach Token
-      let x = htmltext.indexOf('EAAAA')
-      let token1 = htmltext.substr(x, 200)
-      let y = token1.indexOf("\"")
-      let access_token = token1.substr(0, y)
-      if (access_token) {
-        this._pagesService.getAllPage(access_token, (data) => {
-          this._db.list('postmypage/users/' + localToken).set('pages', data)
-          this._db.list('postmypage/users/' + localToken).set('access_token', access_token)
-          window.location.href = '/'
-        })
-        // this._pagesService.getAllPage(access_token).subscribe(arrPages => {
-        //   this._db.list('postmypage/users/' + localToken).set('pages', arrPages)
-        //   this._db.list('postmypage/users/' + localToken).set('access_token', access_token)
-        //   window.location.href = '/'
-        // })
-      } else {
-        alert('Code không hợp lệ, hãy nhớ đăng nhập facebook và làm lại theo hướng dẫn')
-      }
-    } else {
-      alert('Hãy nhập mã code theo hướng dẫn trước khi submit')
+    if (!html) {
+      return alert('Hãy nhập mã code theo hướng dẫn trước khi submit')
     }
+    let htmltext = this._pagesService.html2text(html)
+    // Tach Token
+    let x = htmltext.indexOf('EAAAA')
+    let token1 = htmltext.substr(x, 200)
+    let y = token1.indexOf("\"")
+    let access_token = token1.substr(0, y)
+    if (!access_token) {
+      return alert('Code không hợp lệ, hãy nhớ đăng nhập facebook và làm lại theo hướng dẫn')
+    }
+
+    this.isAdd = true
+    this._pagesService.getAllPage(access_token, (data) => {
+      this._db.list('postmypage/users/' + localToken).set('pages', data)
+      this._db.list('postmypage/users/' + localToken).set('access_token', access_token)
+      window.location.href = '/'
+    })
   }
 }

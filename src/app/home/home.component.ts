@@ -43,18 +43,16 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.arrPages = this._db.list('postmypage/users/' + localToken + '/pages').valueChanges()
   }
-  upload(image) {
+  async  upload(image) {
     let random = Math.floor(Math.random() * 100000)
-    let taskUpload = this._storage.upload('postmypage/' + new Date().getTime() + random, image).then(res => {
-      let fullPath = (res.metadata.fullPath)
-      this._db.list('postmypage/imageuploaded').push(fullPath).then(xxxxx => {
-        this.arrImageOnStorage.push({
-          key: xxxxx.key,
-          path: fullPath
-        })
-      })
-      this.arrImages.push(res.downloadURL)
+    let res = await this._storage.upload('postmypage/' + new Date().getTime() + random, image)
+    let fullPath = (res.metadata.fullPath)
+    let xxxxx = await this._db.list('postmypage/imageuploaded').push(fullPath)
+    this.arrImageOnStorage.push({
+      key: xxxxx.key,
+      path: fullPath
     })
+    this.arrImages.push(res.downloadURL)
   }
   uploadImages(images) {
     for (let image of images) {
@@ -116,7 +114,7 @@ export class HomeComponent implements OnInit {
         let dash = 'datetimepicker-'
         let positionDash = key.indexOf('datetimepicker')
         if (positionDash != -1 && formvalue[key] != '|') {
-          
+
           var acc = key.slice(positionDash + dash.length)
           var huy = this._postcontentservice.getTime(form.value[key])
           this.arrDayTime[acc] = (huy)
